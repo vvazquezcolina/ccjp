@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CCJP – Arte, Tecnología y Comunidad</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#0b1220; --panel:#0f172a; --muted:#94a3b8; --text:#e5e7eb; --title:#ffffff; --brand:#f97316; --accent:#22d3ee; --shadow:0 20px 60px rgba(0,0,0,.35); }
+    @media (prefers-color-scheme: light){ :root{ --bg:#f6f7fb; --panel:#ffffff; --muted:#64748b; --text:#0f172a; --title:#0b1220; } }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{ margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text);
+      background: radial-gradient(1200px 800px at 85% -10%, rgba(34,211,238,.18), transparent 60%),
+                  radial-gradient(900px 700px at -10% 110%, rgba(249,115,22,.18), transparent 60%), var(--bg);
+      overflow:hidden; }
+    .deck{ height:100%; display:grid; place-items:center; padding:24px; }
+    .slide{ width:min(1100px,92vw); height:min(660px,86vh); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)), var(--panel);
+      border:1px solid rgba(255,255,255,.06); border-radius:24px; box-shadow:var(--shadow); padding:48px 56px; display:none; position:relative; }
+    .slide.active{ display:block; }
+    .slide h1,.slide h2{ margin:0 0 12px; color:var(--title); } .slide h1{ font-size:44px; letter-spacing:.2px; } .slide h2{ font-size:28px; color:#fff; }
+    .eyebrow{ color:var(--accent); font-weight:600; letter-spacing:.12em; text-transform:uppercase; font-size:13px; }
+    .kicker{ color:var(--muted); font-size:14px; margin-top:4px; }
+    p{ line-height:1.55; font-size:18px; color:var(--text); } ul{ margin:12px 0 0 0; padding-left:18px; } li{ margin:6px 0; font-size:18px; }
+    .grid{ display:grid; gap:12px; } .cols-2{ grid-template-columns:1fr 1fr; } .cols-3{ grid-template-columns:repeat(3,1fr); }
+    .pill{ display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(34,211,238,.12); color:#a5f3fc; font-size:12px; font-weight:600; letter-spacing:.04em }
+    .tag{ display:inline-block; padding:4px 8px; border-radius:8px; background:rgba(249,115,22,.14); color:#fed7aa; font-size:12px; font-weight:600; }
+    table{ width:100%; border-collapse:separate; border-spacing:0; margin-top:8px; } th,td{ text-align:left; padding:10px 12px; font-size:15px; vertical-align:top; }
+    thead th{ position:sticky; top:0; background:rgba(255,255,255,.06); color:#fff; font-weight:700; }
+    tbody tr{ background:rgba(255,255,255,.02); } tbody tr:nth-child(even){ background:rgba(255,255,255,.04); } tbody tr:hover{ background:rgba(34,211,238,.08); }
+    td.wide{ width:40%; } .num{ text-align:right; white-space:nowrap; }
+    .meta{ position:absolute; inset:24px 28px auto auto; display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted);
+      background:rgba(15,23,42,.6); padding:8px 12px; border:1px solid rgba(255,255,255,.08); border-radius:10px; backdrop-filter: blur(8px); }
+    .meta .dot{ width:6px; height:6px; border-radius:50%; background:var(--brand); box-shadow:0 0 0 3px rgba(249,115,22,.2); }
+    .footer{ position:absolute; inset:auto 56px 28px 56px; display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:13px;
+      border-top:1px dashed rgba(255,255,255,.08); padding-top:10px; }
+    .progress{ position:absolute; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg, var(--brand), var(--accent)); transform:scaleX(0); transform-origin:left; }
+    .controls{ position:fixed; right:24px; bottom:24px; display:flex; gap:10px; z-index:5 } .btn{ background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.12);
+      padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; transition:.2s transform ease, .2s background ease; user-select:none; backdrop-filter: blur(6px); }
+    .btn:hover{ transform: translateY(-1px); background:rgba(255,255,255,.12) } .btn:active{ transform: translateY(0) }
+    .cover{ display:grid; grid-template-columns:1.3fr 1fr; gap:28px; height:100%; } .cover .hero{ align-self:center;
+      background: radial-gradient(380px 200px at 20% 30%, rgba(34,211,238,.16), transparent 60%), radial-gradient(340px 180px at 80% 60%, rgba(249,115,22,.14), transparent 60%),
+      linear-gradient(160deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:28px; display:grid; gap:12px; }
+    .cover h1{ font-size:44px } .brandbar{ display:flex; gap:10px; align-items:center; } .logo{ width:12px; height:12px; border-radius:4px;
+      background:linear-gradient(180deg, var(--brand), var(--accent)); box-shadow:0 0 0 6px rgba(255,255,255,.05) inset; }
+    .stamp{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px dashed rgba(255,255,255,.18); border-radius:999px; font-size:12px; color:var(--muted) }
+    @media print{ body{ overflow:visible; background:#fff } .slide{ width:100%; height:auto; break-inside:avoid; box-shadow:none; border-radius:0; border:0; }
+      .controls,.progress{ display:none } .footer{ color:#6b7280 } .meta{ background:none; border:0 } }
+    .photo{ width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow); aspect-ratio:16/9; }
+    .imggrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    @media (max-width:900px){ .imggrid{ grid-template-columns:1fr 1fr } }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <!-- 1 · Portada -->
+    <section class="slide active" data-title="Portada">
+      <div class="meta"><span class="dot"></span> CCJP</div>
+      <div class="cover">
+        <div class="hero">
+          <span class="eyebrow">UNIVERSIDAD ANÁHUAC CANCÚN · 2025</span>
+          <h1>Centro Cultural Juvenil Playa (CCJP)<br><span style="color:var(--accent)">Arte, Tecnología y Comunidad</span></h1>
+          <p class="kicker">Diplomado Gestión Estratégica – Módulo Responsabilidad Social · Ago 2025 · Mtro. Gerardo Lastiri</p>
+          <div class="grid cols-2" style="margin-top:10px">
+            <div>
+              <div class="stamp"><strong>Por:</strong> Víctor Manuel Vázquez Colina</div>
+              <div class="stamp">Playa del Carmen, Q. Roo · <strong>15 agosto 2025</strong></div>
+            </div>
+            <div style="justify-self:end; align-self:end; text-align:right">
+              <div class="brandbar"><span class="logo"></span></div>
+            </div>
+          </div>
+        </div>
+        <div style="align-self:center">
+          <h2>Resumen</h2>
+          <p>Diseñar, financiar, construir y operar un <strong>centro cultural</strong> para niñez y juventud (&le;21) con formación artística, talleres <strong>STEAM</strong>, exposiciones y <strong>espacios seguros</strong> de convivencia. Integra <strong>IA</strong> para registro, accesibilidad y <strong>KPI</strong> en tiempo real.</p>
+          <ul>
+            <li><b>Apertura:</b> dic 2026 (piloto + evento inaugural)</li>
+            <li><b>Impacto:</b> &ge;1,000 visitantes/mes (≥51% menores)</li>
+            <li><b>Calidad:</b> satisfacción ≥4.3/5 y NPS ≥50</li>
+          </ul>
+          <!-- IMAGEN PRINCIPAL: Banner de Playa del Carmen -->
+          <img src="images/playa-del-carmen-banner.jpg" class="photo" alt="Playa del Carmen - Vista panorámica de la ciudad y el mar" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <!-- Fallback SVG si la imagen no carga -->
+          <svg class="photo" viewBox="0 0 1200 675" role="img" aria-label="Playa del Carmen – Banner" style="display:none;">
+            <defs><linearGradient id="gHero" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs>
+            <rect width="1200" height="675" fill="url(#gHero)"/>
+            <text x="70" y="560" font-family="Inter,Segoe UI,Roboto" font-size="64" font-weight="800" fill="#fff">Playa del Carmen</text>
+          </svg>
+        </div>
+      </div>
+      <div class="footer"><span>CCJP · Arte, Tecnología y Comunidad</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 2 · Galería Visual -->
+    <section class="slide" data-title="Galería">
+      <div class="meta"><span class="dot"></span> Galería</div>
+      <span class="eyebrow">Moodboard</span>
+      <h2>Galería Visual (referencial)</h2>
+      <div class="imggrid">
+        <!-- IMAGEN 1: Arte - Talleres de pintura, escultura, etc. -->
+        <img src="images/arte-talleres.jpg" class="photo" alt="Talleres de arte para jóvenes" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg viewBox="0 0 600 400" class="photo" role="img" aria-label="Arte" style="display:none;"><defs><linearGradient id="ga" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e879f9"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs><rect width="600" height="400" fill="url(#ga)"/><text x="36" y="360" font-family="Inter,Segoe UI,Roboto" font-size="40" fill="#fff" font-weight="800">Arte</text></svg>
+        
+        <!-- IMAGEN 2: Tecnología - Laboratorio de computación, robótica -->
+        <img src="images/tecnologia-laboratorio.jpg" class="photo" alt="Laboratorio de tecnología y robótica" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg viewBox="0 0 600 400" class="photo" role="img" aria-label="Tecnología" style="display:none;"><defs><linearGradient id="gb" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient></defs><rect width="600" height="400" fill="url(#gb)"/><text x="36" y="360" font-family="Inter,Segoe UI,Roboto" font-size="40" fill="#fff" font-weight="800">Tecnología</text></svg>
+        
+        <!-- IMAGEN 3: Juventud - Jóvenes participando en actividades -->
+        <img src="images/juventud-actividades.jpg" class="photo" alt="Jóvenes participando en actividades culturales" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg viewBox="0 0 600 400" class="photo" role="img" aria-label="Juventud" style="display:none;"><defs><linearGradient id="gc" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><rect width="600" height="400" fill="url(#gc)"/><text x="36" y="360" font-family="Inter,Segoe UI,Roboto" font-size="40" fill="#fff" font-weight="800">Juventud</text></svg>
+        
+        <!-- IMAGEN 4: Cine-Club - Sala de proyección -->
+        <img src="images/cine-club-sala.jpg" class="photo" alt="Sala de cine-club para proyecciones" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg viewBox="0 0 600 400" class="photo" role="img" aria-label="Cine-Club" style="display:none;"><defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#22c55e"/></linearGradient></defs><rect width="600" height="400" fill="url(#gd)"/><text x="36" y="360" font-family="Inter,Segoe UI,Roboto" font-size="40" fill="#fff" font-weight="800">Cine-Club</text></svg>
+        
+        <!-- IMAGEN 5: Música - Sala de ensayo, instrumentos -->
+        <img src="images/musica-ensayo.jpg" class="photo" alt="Sala de música e instrumentos" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg viewBox="0 0 600 400" class="photo" role="img" aria-label="Música" style="display:none;"><defs><linearGradient id="ge" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#f472b6"/></linearGradient></defs><rect width="600" height="400" fill="url(#ge)"/><text x="36" y="360" font-family="Inter,Segoe UI,Roboto" font-size="40" fill="#fff" font-weight="800">Música</text></svg>
+        
+        <!-- IMAGEN 6: Makerspace - Taller de fabricación digital -->
+        <img src="images/makerspace-taller.jpg" class="photo" alt="Makerspace con impresoras 3D y herramientas" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg viewBox="0 0 600 400" class="photo" role="img" aria-label="Makerspace" style="display:none;"><defs><linearGradient id="gf" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs><rect width="600" height="400" fill="url(#gf)"/><text x="36" y="360" font-family="Inter,Segoe UI,Roboto" font-size="40" fill="#fff" font-weight="800">Makerspace</text></svg>
+      </div>
+      <div class="footer"><span>Galería Visual CCJP</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 3 · Introducción -->
+    <section class="slide" data-title="Introducción">
+      <div class="meta"><span class="dot"></span> Introducción</div>
+      <span class="eyebrow">Contexto</span>
+      <h2>¿Qué es el CCJP?</h2>
+      <p>Iniciativa para un <strong>centro cultural</strong> en Playa del Carmen orientado a <strong>niñez y juventud (&le;21)</strong> con formación artística, talleres STEAM, exposiciones y <strong>espacios seguros</strong> de convivencia. Integra <strong>IA</strong> para registro, accesibilidad y <strong>KPI</strong> en tiempo real, alineando estrategia empresarial y comunidad.</p>
+      <ul><li>Ciudad más <strong>segura, creativa e inclusiva</strong>.</li><li>Modelo de <strong>gobernanza</strong> con rendición de cuentas y transparencia.</li></ul>
+      <div class="footer"><span>Universidad Anáhuac Cancún · Ago 2025</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 4 · Objetivos -->
+    <section class="slide" data-title="Objetivos">
+      <div class="meta"><span class="dot"></span> Objetivos</div>
+      <span class="eyebrow">Metas SMART</span>
+      <h2>Objetivos del Proyecto (año 1)</h2>
+      <ul>
+        <li><b>Apertura dic 2026</b> con permisos y operación piloto aprobada.</li>
+        <li><b>&ge;1,000 visitantes/mes</b> a los 3 meses (≥51% menores de 21).</li>
+        <li><b>&ge;90 talleres/año</b> (arte, música, cine, teatro, foto, diseño, STEAM).</li>
+        <li><b>Satisfacción &ge;85%</b> (promedio ≥4.3/5) y <b>NPS &ge;50</b>.</li>
+        <li><b>&ge;60% CAPEX</b> por crowdfunding/donativos y <b>&ge;10 alianzas</b> antes de apertura.</li>
+      </ul>
+      <div class="footer"><span>CCJP · Objetivos</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 5 · Justificación -->
+    <section class="slide" data-title="Justificación">
+      <div class="meta"><span class="dot"></span> Justificación</div>
+      <span class="eyebrow">Por qué ahora</span>
+      <h2>Justificación</h2>
+      <ul>
+        <li><b>Brecha de oferta:</b> pocos espacios culturales asequibles para jóvenes.</li>
+        <li><b>Prevención:</b> alternativas formativas reducen riesgos psicosociales.</li>
+        <li><b>Cohesión:</b> redes de apoyo, participación y convivencia intergeneracional.</li>
+      </ul>
+      <div class="footer"><span>Evidencia y pertinencia</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 6 · Alcance -->
+    <section class="slide" data-title="Alcance">
+      <div class="meta"><span class="dot"></span> Alcance</div>
+      <span class="eyebrow">Qué haremos</span>
+      <h2>Metas / Alcance – Actividades Clave</h2>
+      <div class="grid cols-2">
+        <ul>
+          <li>Espacio <strong>multiuso</strong>: talleres, galería, cine-club, makerspace.</li>
+          <li>Curaduría de <strong>exposiciones</strong> y <strong>agenda mensual</strong>.</li>
+          <li>Programación educativa por <strong>módulos</strong> (arte & STEAM).</li>
+        </ul>
+        <ul>
+          <li><strong>Festivales</strong> trimestrales y <strong>voluntariado</strong> juvenil.</li>
+          <li>Visitas <strong>escolares</strong> y convenios con instituciones.</li>
+          <li>Enfoque de <strong>inclusión</strong> (discapacidad, vulnerabilidad, diversidad).</li>
+        </ul>
+      </div>
+      <div class="footer"><span>Actividades</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 7 · Cobertura -->
+    <section class="slide" data-title="Cobertura">
+      <div class="meta"><span class="dot"></span> Cobertura</div>
+      <span class="eyebrow">A quién llegamos</span>
+      <h2>Cobertura & Población Objetivo</h2>
+      <ul>
+        <li><strong>Playa del Carmen</strong>: colonias Centro, Ejidal, Forjadores y aledañas.</li>
+        <li><strong>8–21 años</strong> (prioritario), docentes y familias.</li>
+        <li>Accesibilidad universal y <strong>política de becas</strong>.</li>
+      </ul>
+      <div class="footer"><span>Territorio</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 8 · Metodología -->
+    <section class="slide" data-title="Metodología">
+      <div class="meta"><span class="dot"></span> Metodología</div>
+      <span class="eyebrow">Cómo lo ejecutamos</span>
+      <h2>Metodología de Implementación</h2>
+      <div class="grid cols-2">
+        <ul>
+          <li><strong>Gestión de proyecto</strong>: PMO ligera, RACI, riesgos & cambios (ISO 21502).</li>
+          <li><strong>Financiamiento híbrido</strong>: crowdfunding, Ad Grants, donativos, convocatorias, eventos.</li>
+          <li><strong>Programación educativa</strong>: por competencias, rúbricas y co-creación juvenil.</li>
+          <li><strong>Sostenibilidad</strong>: eficiencia energética, compras responsables y proveedores locales.</li>
+        </ul>
+        <ul>
+          <li><strong>Ética & datos</strong>: aviso de privacidad, minimización, consentimientos, derechos ARCO.</li>
+          <li><strong>Talleres de IA</strong> y ciudadanía digital responsable.</li>
+        </ul>
+      </div>
+      <div class="footer"><span>Marco de referencia</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 9 · IA -->
+    <section class="slide" data-title="IA">
+      <div class="meta"><span class="dot"></span> IA & Datos</div>
+      <span class="eyebrow">Tecnología al servicio</span>
+      <h2>Componente de IA</h2>
+      <ul>
+        <li><strong>Chatbot</strong> (información, registro a talleres, accesibilidad).</li>
+        <li><strong>Dashboard de KPIs</strong> (asistencia, becas, satisfacción) con alertas.</li>
+        <li><strong>Análisis de sentimiento</strong> en RRSS para ajustar programación.</li>
+        <li><strong>Gobernanza de datos</strong> y privacidad infantil (consentimientos).</li>
+      </ul>
+      <div class="footer"><span>IA aplicada</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 10 · Cronograma -->
+    <section class="slide" data-title="Cronograma">
+      <div class="meta"><span class="dot"></span> Cronograma</div>
+      <span class="eyebrow">Ruta crítica</span>
+      <h2>Cronograma</h2>
+      <table>
+        <thead><tr><th>Fase</th><th>Inicio</th><th>Fin</th><th class="wide">Entregables clave</th></tr></thead>
+        <tbody>
+          <tr><td>Pre-difusión Ads</td><td>Ago 2025</td><td>Oct 2025</td><td>Mensajes, landing, GA4/GTM, línea base</td></tr>
+          <tr><td>Alianzas & Pre-campaña</td><td>Sep 2025</td><td>Nov 2025</td><td>10 cartas de intención, plan de recompensas</td></tr>
+          <tr><td>Crowdfunding</td><td>Dic 2025</td><td>Mar 2026</td><td>60% meta CAPEX asegurada</td></tr>
+          <tr><td>Diseño & Permisos</td><td>Ene 2026</td><td>May 2026</td><td>Planos ejecutivos, licencias, costo final</td></tr>
+          <tr><td>Construcción</td><td>Jun 2026</td><td>Nov 2026</td><td>Obra civil, acabados, pruebas</td></tr>
+          <tr><td>Curaduría & Artistas</td><td>Jul 2026</td><td>Nov 2026</td><td>Contratos, calendario de expos/talleres</td></tr>
+          <tr><td>Pre-apertura (pilotos)</td><td>Nov 2026</td><td>Dic 2026</td><td>Equipamiento, pilotos con 3 escuelas</td></tr>
+          <tr><td><b>Apertura</b></td><td>Dic 2026</td><td>Dic 2026</td><td><b>Evento inaugural</b>, operación mes 0</td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>Hitos</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 11 · RH -->
+    <section class="slide" data-title="Recursos Humanos">
+      <div class="meta"><span class="dot"></span> Recursos</div>
+      <span class="eyebrow">Año 1 · OPEX RH</span>
+      <h2>Recursos Humanos</h2>
+      <table>
+        <thead><tr><th>Rol</th><th>FTE</th><th>Función</th><th class="num">Costo anual (MXN)</th></tr></thead>
+        <tbody>
+          <tr><td>Dirección del Centro</td><td>1.0</td><td>Dirección, alianzas, cumplimiento</td><td class="num">720,000</td></tr>
+          <tr><td>Coordinación Programación</td><td>1.0</td><td>Malla de talleres, calidad</td><td class="num">540,000</td></tr>
+          <tr><td>MKT/PR & Ads</td><td>1.0</td><td>Ad Grants, pauta, prensa</td><td class="num">480,000</td></tr>
+          <tr><td>Operación/Atención</td><td>2.0</td><td>Taquilla, registro, logística</td><td class="num">600,000</td></tr>
+          <tr><td>Docentes/Talleristas</td><td>1.5 eq.</td><td>120 talleres/año</td><td class="num">720,000</td></tr>
+          <tr><td>TI/Soporte & Datos (PT)</td><td>0.5</td><td>Web, chatbot, dashboard</td><td class="num">240,000</td></tr>
+          <tr><td colspan="3"><b>Total OPEX RH</b></td><td class="num"><b>3,300,000</b></td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>Equipo</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 12 · CAPEX -->
+    <section class="slide" data-title="CAPEX">
+      <div class="meta"><span class="dot"></span> CAPEX</div>
+      <span class="eyebrow">Inversión inicial</span>
+      <h2>Recursos Materiales (CAPEX estimado)</h2>
+      <table>
+        <thead><tr><th>Partida</th><th class="num">MXN</th></tr></thead>
+        <tbody>
+          <tr><td>Obra civil y adecuaciones</td><td class="num">8,000,000</td></tr>
+          <tr><td>Equipamiento (salas, A/V, makerspace)</td><td class="num">1,800,000</td></tr>
+          <tr><td>Mobiliario y señalética accesible</td><td class="num">700,000</td></tr>
+          <tr><td>TI (red, PCs, tablets)</td><td class="num">600,000</td></tr>
+          <tr><td>Seguridad & accesibilidad</td><td class="num">400,000</td></tr>
+          <tr><td>Contingencia 10%</td><td class="num">1,350,000</td></tr>
+          <tr><td><b>Total CAPEX</b></td><td class="num"><b>12,850,000</b></td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>Financiamiento</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 13 · Finanzas -->
+    <section class="slide" data-title="Finanzas">
+      <div class="meta"><span class="dot"></span> Finanzas</div>
+      <span class="eyebrow">Resumen</span>
+      <h2>Recursos Financieros</h2>
+      <ul>
+        <li><b>CAPEX:</b> 12.85 M MXN (≥60% crowdfunding/donativos; resto patrocinios/convocatorias).</li>
+        <li><b>OPEX año 1:</b> ~5.0 M MXN (RH 3.3 M + servicios/insumos/becas/seguros/MKT ~1.7 M).</li>
+        <li><b>Equilibrio:</b> previsto en año 2 (1,200–1,400 visitantes/mes; 10–12 eventos/mes).</li>
+      </ul>
+      <div class="footer"><span>Proyección 3 años</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 14 · KPIs -->
+    <section class="slide" data-title="KPIs">
+      <div class="meta"><span class="dot"></span> KPIs</div>
+      <span class="eyebrow">Medición</span>
+      <h2>Indicadores de Éxito (KPI)</h2>
+      <table>
+        <thead><tr><th>KPI</th><th>Fórmula</th><th>Meta</th><th>Frec.</th><th>Resp.</th></tr></thead>
+        <tbody>
+          <tr><td>Visitantes/mes</td><td># entradas</td><td>&ge;1,000</td><td>Mensual</td><td>Ops</td></tr>
+          <tr><td>% menores ≤21</td><td>menores≤21/total</td><td>&ge;51%</td><td>Mensual</td><td>Registro</td></tr>
+          <tr><td>Talleres impartidos</td><td># talleres/año</td><td>&ge;120</td><td>Trimestral</td><td>Prog.</td></tr>
+          <tr><td>Satisfacción (1–5)</td><td>promedio encuesta</td><td>&ge;4.3</td><td>Mensual</td><td>MKT</td></tr>
+          <tr><td>NPS</td><td>% prom − % det</td><td>&ge;50</td><td>Trimestral</td><td>MKT</td></tr>
+          <tr><td>Alianzas activas</td><td># convenios</td><td>&ge;10</td><td>Trimestral</td><td>Dir.</td></tr>
+          <tr><td>Costo por visitante</td><td>OPEX/visitantes</td><td>↓10% T2 vs T1</td><td>Trimestral</td><td>Finanzas</td></tr>
+          <tr><td>Energía por m²</td><td>kWh/m²</td><td>−15% año 2</td><td>Trimestral</td><td>Manto.</td></tr>
+          <tr><td>Voluntariado</td><td>Horas/mes</td><td>&ge;120</td><td>Mensual</td><td>RRHH</td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>Transparencia</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 15 · Impacto -->
+    <section class="slide" data-title="Impacto">
+      <div class="meta"><span class="dot"></span> Impacto</div>
+      <span class="eyebrow">Valor creado</span>
+      <h2>Impacto Esperado & ODS</h2>
+      <div class="grid cols-2">
+        <ul>
+          <li><b>Social:</b> acceso a cultura/STEAM, habilidades socioemocionales, espacios seguros.</li>
+          <li><b>Económico:</b> empleos, proveedores locales, turismo cultural.</li>
+          <li><b>Ambiental:</b> eficiencia energética y educación ambiental.</li>
+        </ul>
+        <ul>
+          <li><b>ODS:</b> 4 Educación, 8 Trabajo decente, 11 Ciudades sostenibles, 16 Paz/justicia.</li>
+        </ul>
+      </div>
+      <div class="footer"><span>Teoría de cambio</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 16 · Comunicación -->
+    <section class="slide" data-title="Comunicación">
+      <div class="meta"><span class="dot"></span> Comunicación</div>
+      <span class="eyebrow">Stakeholders</span>
+      <h2>Plan de Comunicación</h2>
+      <ul>
+        <li><b>Mensajes:</b> acceso, inclusión, transparencia financiera, agenda mensual.</li>
+        <li><b>Canales:</b> web/landing, chatbot/WhatsApp, IG/TikTok/FB, boletín, prensa, escuelas.</li>
+        <li><b>Transparencia:</b> micrositio con KPIs en tiempo real; reportes trimestrales (GRI‑lite).</li>
+        <li><b>Relación comunitaria:</b> cabildos abiertos bimestrales, buzón digital, tours escolares.</li>
+        <li><b>Crisis:</b> vocería, Q&A, protocolo de incidentes con menores.</li>
+      </ul>
+      <div class="footer"><span>Relación y confianza</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 17 · Conclusión -->
+    <section class="slide" data-title="Conclusión">
+      <div class="meta"><span class="dot"></span> Cierre</div>
+      <span class="eyebrow">Llamado a la acción</span>
+      <h2>Conclusión · ¿Qué solicitamos?</h2>
+      <ul>
+        <li><b>(1)</b> Validar presupuesto preliminar y plan de financiamiento.</li>
+        <li><b>(2)</b> Autorizar diseño ejecutivo y permisos.</li>
+        <li><b>(3)</b> Lanzar crowdfunding dic 2025 y formalizar alianzas.</li>
+      </ul>
+      <p>Inversión de alto impacto social con operación sostenible y medición rigurosa.</p>
+      <div class="footer"><span>Gracias</span></div>
+      <div class="progress"></div>
+    </section>
+
+    <!-- 18 · Anexos resumidos -->
+    <section class="slide" data-title="Anexo · RACI">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Gobernanza</span><h2>Anexo 1 · RACI resumido</h2>
+      <table><thead><tr><th>Entregable</th><th>Dirección</th><th>PM</th><th>MKT/PR</th><th>Ops</th><th>Jurídico</th><th>Consejo</th></tr></thead>
+      <tbody><tr><td>Permisos & licencias</td><td>A</td><td>R</td><td>C</td><td>C</td><td>R</td><td>I</td></tr>
+      <tr><td>Campaña crowdfunding</td><td>I</td><td>R</td><td>A</td><td>C</td><td>I</td><td>C</td></tr>
+      <tr><td>Contratación talleristas</td><td>A</td><td>R</td><td>C</td><td>R</td><td>C</td><td>I</td></tr>
+      <tr><td>Política de becas</td><td>A</td><td>R</td><td>C</td><td>C</td><td>R</td><td>I</td></tr>
+      <tr><td>Reporte trimestral GRI‑lite</td><td>A</td><td>R</td><td>C</td><td>C</td><td>C</td><td>I</td></tr></tbody></table>
+      <div class="footer"><span>Comité Directivo (mensual) · Consejo Consultivo (trimestral)</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Teoría de Cambio">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Marco causal</span><h2>Anexo 2 · Teoría de Cambio (narrativa)</h2>
+      <p>Si aseguramos financiamiento, alianzas y espacios seguros; y ofrecemos talleres/arte/STEAM con becas e inclusión; entonces aumentaremos <strong>habilidades</strong>, <strong>participación cultural</strong> y <strong>redes de apoyo</strong> juveniles, reduciendo riesgos psicosociales y fortaleciendo la <strong>cohesión comunitaria</strong> en 3–5 años.</p>
+      <p class="kicker">Supuestos críticos: permisos a tiempo, estabilidad de fondeo, seguridad y aceptación comunitaria.</p>
+      <div class="footer"><span>Enfoque resultados</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Riesgos">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Gestión de riesgos</span><h2>Anexo 3 · Matriz de Riesgos</h2>
+      <table><thead><tr><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Mitigación</th><th>Trigger</th></tr></thead>
+      <tbody><tr><td>Retraso en permisos</td><td>Media</td><td>Alto</td><td>Gestor externo + buffer 45 días</td><td>No-respuesta 15 días</td></tr>
+      <tr><td>Meta de fondeo insuficiente</td><td>Media</td><td>Alto</td><td>Tramos + matching corporativo</td><td>&lt;40% meta a 45 días</td></tr>
+      <tr><td>Sobre-costo en obra</td><td>Media</td><td>Alto</td><td>Contrato precio objetivo + 10% contingencia</td><td>&gt;8% variación insumos</td></tr>
+      <tr><td>Seguridad de menores</td><td>Baja</td><td>Alto</td><td>Protocolos, capacitaciones, control de acceso</td><td>Incidente nivel 1</td></tr>
+      <tr><td>Reputación</td><td>Baja</td><td>Medio</td><td>Transparencia KPI y auditoría social</td><td>Quejas formales repetidas</td></tr>
+      <tr><td>Rotación de talleristas</td><td>Media</td><td>Medio</td><td>Bolsa talento + onboarding estándar</td><td>&gt;15% rotación trimestral</td></tr></tbody></table>
+      <div class="footer"><span>Riesgos prioritarios</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Cumplimiento & Ética">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Compliance</span><h2>Anexo 4 · Cumplimiento & Ética</h2>
+      <ul><li><b>Datos personales (MX):</b> LFPDPPP, aviso de privacidad, ARCO; consentimientos de menores.</li>
+      <li><b>Protección Civil:</b> aforos, salidas, brigadas, simulacros.</li>
+      <li><b>Seguros:</b> RC, accidentes personales, equipo.</li>
+      <li><b>PI/imagen:</b> cesiones y permisos (menores).</li>
+      <li><b>Accesibilidad:</b> NOM/lineamientos y señalética inclusiva.</li>
+      <li><b>Anticorrupción & compras:</b> código de conducta, 4 ojos.</li></ul>
+      <div class="footer"><span>Marco normativo</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Stakeholders">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Mapa</span><h2>Anexo 5 · Stakeholders & Engagement</h2>
+      <table><thead><tr><th>Grupo</th><th>Interés</th><th>Poder</th><th>Estrategia</th></tr></thead>
+      <tbody><tr><td>Jóvenes/niñez</td><td>Alto</td><td>Medio</td><td>Co-creación + becas</td></tr>
+      <tr><td>Padres/escuelas</td><td>Alto</td><td>Medio</td><td>Visitas guiadas + boletines</td></tr>
+      <tr><td>Gobierno local</td><td>Medio</td><td>Alto</td><td>Convenios + reportes</td></tr>
+      <tr><td>Empresas ESR</td><td>Medio</td><td>Alto</td><td>Patrocinios con KPIs</td></tr>
+      <tr><td>ONGs culturales</td><td>Alto</td><td>Medio</td><td>Programas compartidos</td></tr>
+      <tr><td>Vecinos</td><td>Medio</td><td>Medio</td><td>Mesas de diálogo</td></tr></tbody></table>
+      <div class="footer"><span>Relación estratégica</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · M&E">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Monitoreo</span><h2>Anexo 6 · Plan de Monitoreo y Evaluación</h2>
+      <ul><li><b>Línea base:</b> encuesta inicial, mapeo escolar, diagnóstico comunitario.</li>
+      <li><b>Fuentes:</b> taquilla/registro, encuestas QR, GA4/GTM, CRM, panel de becas.</li>
+      <li><b>Frecuencia:</b> mensual (operación), trimestral (impacto), anual (memoria).</li>
+      <li><b>Gobernanza de datos:</b> responsable, políticas de retención y anonimización.</li>
+      <li><b>Evaluación externa:</b> al cierre del año 1.</li></ul>
+      <div class="footer"><span>M&E</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Presupuesto">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Resumen</span><h2>Anexo 7 · Presupuesto Detallado (resumen)</h2>
+      <ul><li><b>CAPEX (12.85 M MXN):</b> obra (8.0), A/V & makerspace (1.8), mobiliario (0.7), TI (0.6), seguridad/accesibilidad (0.4), contingencia (1.35).</li>
+      <li><b>OPEX año 1 (~5.0 M):</b> RH (3.3), servicios (0.6), MKT/com (0.4), materiales (0.25), seguros/cumplimiento (0.2), becas (0.2), mantenimiento (0.05).</li></ul>
+      <div class="footer"><span>Montos académicos estimados</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · SROI">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Retorno social</span><h2>Anexo 8 · SROI (ilustrativo)</h2>
+      <ul><li><b>Beneficios monetizados año 1:</b> $7,800,000 MXN.</li>
+      <li><b>Inversión operativa año 1:</b> $5,000,000 MXN.</li>
+      <li><b>SROI =</b> 7,800,000 / 5,000,000 = <b>1.56 : 1</b>.</li>
+      <li><b>Sensibilidad ±20%:</b> rango 1.25–1.87.</li></ul>
+      <div class="footer"><span>Valor público</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Sostenibilidad">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Modelo de ingresos</span><h2>Anexo 9 · Plan de Sostenibilidad Financiera (3 años)</h2>
+      <ul><li><b>Ingresos:</b> alquiler de salas, talleres pagados, tienda/merch, eventos de recaudación.</li>
+      <li><b>Mix objetivo año 2:</b> 35% patrocinios, 25% eventos/espacios, 20% membresías, 15% talleres, 5% merch.</li>
+      <li><b>Punto de equilibrio:</b> año 2 con 1,200–1,400 visitantes/mes y 10–12 eventos/mes.</li></ul>
+      <div class="footer"><span>Modelo operativo</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Política Ambiental">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Ambiental</span><h2>Anexo 10 · Política Ambiental & Compras Responsables</h2>
+      <ul><li><b>Eficiencia energética:</b> iluminación LED, A/A eficiente, −15% kWh/m² año 2.</li>
+      <li><b>Residuos:</b> separación en fuente, compostaje en talleres, retornabilidad.</li>
+      <li><b>Compras locales:</b> ≥50% gasto en proveedores locales; criterios éticos y trazables.</li></ul>
+      <div class="footer"><span>Clima & circularidad</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Inclusión & Accesibilidad">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Inclusión</span><h2>Anexo 11 · Inclusión & Accesibilidad</h2>
+      <ul><li><b>Accesibilidad:</b> rampas, señalética braille, bucle magnético, intérprete según evento.</li>
+      <li><b>No discriminación:</b> protocolo y formación al personal.</li></ul>
+      <div class="footer"><span>Diseño universal</span></div><div class="progress"></div>
+    </section>
+
+    <section class="slide" data-title="Anexo · Comunicación Avanzada">
+      <div class="meta"><span class="dot"></span> Anexo</div><span class="eyebrow">Difusión</span><h2>Anexo 12 · Plan de Comunicación Avanzada</h2>
+      <ul><li><b>Editorial:</b> agenda mensual, historias de impacto, transparencia financiera.</li>
+      <li><b>Canales:</b> web, chatbot, WhatsApp, IG/TikTok/FB, prensa local.</li>
+      <li><b>Crisis:</b> Q&A, vocería, 24h primera respuesta, trazabilidad pública de incidentes.</li></ul>
+      <div class="footer"><span>Reputación</span></div><div class="progress"></div>
+    </section>
+
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="prevBtn" title="Anterior (←)">◀</button>
+    <button class="btn" id="nextBtn" title="Siguiente (→)">▶</button>
+    <button class="btn" id="printBtn" title="Imprimir / PDF (P)">PDF</button>
+  </div>
+
+  <script>
+  (function(){
+    const deck = document.getElementById('deck');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let index = slides.findIndex(s=>s.classList.contains('active'));
+    if(index < 0) index = 0;
+
+    function updateProgress(){
+      const bar = document.querySelector('.slide.active .progress');
+      if(bar){ bar.style.transform = `scaleX(${(index+1)/slides.length})`; }
+    }
+    function go(i){
+      index = Math.max(0, Math.min(i, slides.length-1));
+      slides.forEach((s, idx)=> s.classList.toggle('active', idx===index));
+      document.title = `${slides[index].dataset.title || 'CCJP'} · CCJP`;
+      location.hash = `#${index+1}`;
+      updateProgress();
+    }
+
+    document.getElementById('nextBtn').onclick = ()=>go(index+1);
+    document.getElementById('prevBtn').onclick = ()=>go(index-1);
+    document.getElementById('printBtn').onclick = ()=>window.print();
+
+    window.addEventListener('keydown', (e)=>{
+      if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); go(index+1); }
+      if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); go(index-1); }
+      if(e.key==='Home'){ go(0); }
+      if(e.key==='End'){ go(slides.length-1); }
+      if(e.key.toLowerCase()==='p'){ window.print(); }
+    });
+    window.addEventListener('hashchange', ()=>{
+      const n = parseInt(location.hash.replace('#',''),10);
+      if(!isNaN(n)) go(n-1);
+    });
+    deck.addEventListener('click', (e)=>{
+      const sel = window.getSelection && window.getSelection().toString();
+      if(sel) return;
+      if(e.target.closest('.controls')) return;
+      go(index+1);
+    });
+
+    const initial = parseInt(location.hash.replace('#',''),10);
+    go(!isNaN(initial) ? initial-1 : index);
+  })();
+  </script>
+</body>
+</html>

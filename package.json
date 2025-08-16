@@ -1,0 +1,23 @@
+{
+  "name": "ccjp-slides",
+  "version": "1.0.0",
+  "description": "Centro Cultural Juvenil Playa - Presentación de Proyecto",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "start": "python3 -m http.server 8000",
+    "build": "echo 'Build completed'"
+  },
+  "keywords": [
+    "presentation",
+    "slides",
+    "ccjp",
+    "cultural-center",
+    "playa-del-carmen"
+  ],
+  "author": "Víctor Manuel Vázquez Colina",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
